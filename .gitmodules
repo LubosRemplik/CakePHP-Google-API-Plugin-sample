@@ -1,0 +1,6 @@
+[submodule "app/Plugin/Opauth"]
+	path = app/Plugin/Opauth
+	url = git://github.com/LubosRemplik/cakephp-opauth.git
+[submodule "app/Plugin/Google"]
+	path = app/Plugin/Google
+	url = git://github.com/LubosRemplik/CakePHP-Google-API-Plugin.git
