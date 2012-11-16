@@ -1,0 +1,42 @@
+<?php
+Cache::config('default', array('engine' => 'File'));
+
+CakePlugin::loadAll(array(
+	'Opauth' => array('bootstrap' => true, 'routes' => true),
+	'Google'
+));
+
+Configure::write('Opauth.Strategy', array(
+	'Google' => array(
+		'client_id' => 'Client id, get it from https://code.google.com/apis/console/',
+		'client_secret' => 'Client id, get it from https://code.google.com/apis/console/',
+		'scope' => implode(' ', array(
+			'https://www.googleapis.com/auth/userinfo.profile',
+			'https://www.googleapis.com/auth/userinfo.email', 
+			'https://www.googleapis.com/auth/drive',
+			'https://www.googleapis.com/auth/drive.file',
+			'https://www.googleapis.com/auth/calendar'
+		)),
+		'access_type' => 'offline',
+		'approval_prompt' => 'force',
+		// Optional parameters: scope, state, access_type, approval_prompt
+		'redirect' => '/' 
+	),
+));
+
+Configure::write('Dispatcher.filters', array(
+	'AssetDispatcher',
+	'CacheDispatcher'
+));
+
+App::uses('CakeLog', 'Log');
+CakeLog::config('debug', array(
+	'engine' => 'FileLog',
+	'types' => array('notice', 'info', 'debug'),
+	'file' => 'debug',
+));
+CakeLog::config('error', array(
+	'engine' => 'FileLog',
+	'types' => array('warning', 'error', 'critical', 'alert', 'emergency'),
+	'file' => 'error',
+));
