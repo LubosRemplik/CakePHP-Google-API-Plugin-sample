@@ -4,3 +4,6 @@
 [submodule "app/Plugin/Google"]
 	path = app/Plugin/Google
 	url = git://github.com/LubosRemplik/CakePHP-Google-API-Plugin.git
+[submodule "app/Plugin/Expandable"]
+	path = app/Plugin/Expandable
+	url = git://github.com/LubosRemplik/CakePHP-Expandable-Plugin.git
