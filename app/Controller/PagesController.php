@@ -1,75 +1,92 @@
 <?php
-/**
- * Static content controller.
- *
- * This file will render views from views/pages/
- *
- * PHP 5
- *
- * CakePHP(tm) : Rapid Development Framework (http://cakephp.org)
- * Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- *
- * Licensed under The MIT License
- * Redistributions of files must retain the above copyright notice.
- *
- * @copyright     Copyright 2005-2012, Cake Software Foundation, Inc. (http://cakefoundation.org)
- * @link          http://cakephp.org CakePHP(tm) Project
- * @package       app.Controller
- * @since         CakePHP(tm) v 0.2.9
- * @license       MIT License (http://www.opensource.org/licenses/mit-license.php)
- */
-
 App::uses('AppController', 'Controller');
 
-/**
- * Static content controller
- *
- * Override this controller by placing a copy in controllers directory of an application
- *
- * @package       app.Controller
- * @link http://book.cakephp.org/2.0/en/controllers/pages-controller.html
- */
 class PagesController extends AppController {
 
-/**
- * Controller name
- *
- * @var string
- */
-	public $name = 'Pages';
+	public $uses = array(
+		'Google.Google',
+		'Google.GoogleCalendarEvents',
+		'Google.GoogleDriveFiles',
+	);
 
-/**
- * This controller does not use a model
- *
- * @var array
- */
-	public $uses = array();
-
-/**
- * Displays a view
- *
- * @param mixed What page to display
- * @return void
- */
 	public function display() {
-		$path = func_get_args();
+		// getting user info
+		$info = $this->Google->getUserInfo();
 
-		$count = count($path);
-		if (!$count) {
-			$this->redirect('/');
-		}
-		$page = $subpage = $title_for_layout = null;
+		// list events of default calendar
+		$data = $this->GoogleCalendarEvents->listItems($info['email'], array(
+			'maxResults' => 10
+		));
+		$events = Hash::combine($data['items'], '{n}.id', '{n}.summary');
 
-		if (!empty($path[0])) {
-			$page = $path[0];
+		// list files, which are not trashed
+		$data = $this->GoogleDriveFiles->listItems(array('q' => 'trashed = false'));
+		$files = Hash::combine($data['items'], '{n}.id', '{n}.title');
+
+		$this->set(compact('info', 'events', 'files'));
+
+		$this->render('home');
+	}
+
+	public function addEvent($calendarId) {
+		if ($this->request->is('post')) {
+			// preparing dates
+			extract($this->request->data['Event']['start_date']);
+			$startDate = sprintf('%s-%s-%s', $year, $month, $day);
+			extract($this->request->data['Event']['end_date']);
+			$endDate = sprintf('%s-%s-%s', $year, $month, $day);
+
+			// preparing data
+			$data = array(
+				'summary' => $this->request->data['Event']['summary'],
+				'start' => array(
+					'date' => $startDate
+				),
+				'end' => array(
+					'date' => $endDate
+				),
+			);
+
+			// issue insert
+			if($this->GoogleCalendarEvents->insert($calendarId, $data)) {
+				Cache::clear();
+				$this->Session->setFlash('Event added');
+			}
+			return $this->redirect(array('action' => 'display', 'home'));
 		}
-		if (!empty($path[1])) {
-			$subpage = $path[1];
+		$this->render();
+	}
+
+	public function deleteEvent($calendarId, $eventId) {
+		$result = $this->GoogleCalendarEvents->delete($calendarId, $eventId);
+		if (empty($result)) {
+			Cache::clear();
+			$this->Session->setFlash('Event deleted');
 		}
-		if (!empty($path[$count - 1])) {
-			$title_for_layout = Inflector::humanize($path[$count - 1]);
+		$this->redirect(array('action' => 'display', 'home'));
+	}
+
+	public function addFile() {
+		if ($this->request->is('post')) {
+			// preparing data
+			$file = $this->request->data['Drive']['file'];
+
+			// issue insert
+			if($this->GoogleDriveFiles->insert($file)) {
+				Cache::clear();
+				$this->Session->setFlash('File added');
+			}
+			return $this->redirect(array('action' => 'display', 'home'));
 		}
-		$this->set(compact('page', 'subpage', 'title_for_layout'));
-		$this->render(implode('/', $path));
+		$this->render();
+	}
+
+	public function deleteFile($fileId) {
+		$result = $this->GoogleDriveFiles->delete($fileId);
+		if (empty($result)) {
+			Cache::clear();
+			$this->Session->setFlash('File deleted');
+		}
+		$this->redirect(array('action' => 'display', 'home'));
 	}
 }
