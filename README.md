@@ -2,7 +2,7 @@ CakePHP Google API Plugin sample
 ================================
 This is sample for [CakePHP Google API Plugin](https://github.com/LubosRemplik/CakePHP-Google-API-Plugin).
 
-1.  Install [CakePHP Google API Plugin sample](https://github.com/LubosRemplik/CakePHP-Google-API-Plugin-sample)
+1.  Install
 
 	```bash
 	git clone --recursive https://github.com/LubosRemplik/CakePHP-Google-API-Plugin-sample.git google-sample-app
