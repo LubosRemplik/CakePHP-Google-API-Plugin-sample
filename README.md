@@ -1,39 +1,31 @@
-CakePHP
-=======
+CakePHP Google API Plugin sample
+================================
 
-[![CakePHP](http://cakephp.org/img/cake-logo.png)](http://www.cakephp.org)
+1.  Install [CakePHP Google API Plugin sample](https://github.com/LubosRemplik/CakePHP-Google-API-Plugin-sample)
 
-CakePHP is a rapid development framework for PHP which uses commonly known design patterns like Active Record, Association Data Mapping, Front Controller and MVC.
-Our primary goal is to provide a structured framework that enables PHP users at all levels to rapidly develop robust web applications, without any loss to flexibility.
+	```bash
+	git clone --recursive https://github.com/LubosRemplik/CakePHP-Google-API-Plugin-sample.git google-sample-app
+	```
 
-Some Handy Links
-----------------
+2.  Create database & run bake, schema scripts
 
-[CakePHP](http://www.cakephp.org) - The rapid development PHP framework
+	```bash
+	# basic cakephp installation
+	cd google-sample-app/app
+	chmod -R 777 tmp
+	Console/cake bake db_config
 
-[Cookbook](http://book.cakephp.org) - THE Cake user documentation; start learning here!
+	# schema
+	Console/cake schema create -p Opauth
+	```
 
-[Plugins](http://plugins.cakephp.org/) - A repository of extensions to the framework
+3.  Configure - set google's credentials  
+	Copy bootstrap.php.default to bootstrap.php and add your client_id, client_secret. 
+	You can get these details at https://code.google.com/apis/console/
 
-[The Bakery](http://bakery.cakephp.org) - Tips, tutorials and articles
+	```bash
+	cp Config/bootstrap.php.default Config/bootstrap.php
+	vim Config/bootstrap.php
+	```
 
-[API](http://api.cakephp.org) - A reference to Cake's classes
-
-[CakePHP TV](http://tv.cakephp.org) - Screen casts from events and video tutorials
-
-[The Cake Software Foundation](http://cakefoundation.org/) - promoting development related to CakePHP
-
-Get Support!
-------------
-
-[Our Google Group](http://groups.google.com/group/cake-php) - community mailing list and forum
-
-[#cakephp](http://webchat.freenode.net/?channels=#cakephp) on irc.freenode.net - Come chat with us, we have cake.
-
-[Q & A](http://ask.cakephp.org/) - Ask questions here, all questions welcome
-
-[Lighthouse](http://cakephp.lighthouseapp.com/) - Got issues? Please tell us!
-
-[![Bake Status](https://secure.travis-ci.org/cakephp/cakephp.png?branch=master)](http://travis-ci.org/cakephp/cakephp)
-
-![Cake Power](https://raw.github.com/cakephp/cakephp/master/lib/Cake/Console/Templates/skel/webroot/img/cake.power.gif)
+**Note** You have to configure [Opauth](https://github.com/LubosRemplik/cakephp-opauth) correctly
